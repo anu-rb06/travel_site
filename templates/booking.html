@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Book Package</h3>
+
+<h5>{{ package[1] }}</h5>
+<p>Price: ${{ package[2] }}</p>
+
+<form method="POST">
+
+<input class="form-control mb-3"
+       name="name"
+       placeholder="Your Name"
+       required>
+
+<input class="form-control mb-3"
+       type="email"
+       name="email"
+       placeholder="Email"
+       required>
+
+<button class="btn btn-primary">
+Proceed to Payment
+</button>
+
+</form>
+
+{% endblock %}
+

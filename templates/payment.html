@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Payment</h3>
+
+<form method="POST">
+
+<input class="form-control mb-3"
+placeholder="Card Number"
+required>
+
+<input class="form-control mb-3"
+placeholder="Card Holder Name"
+required>
+
+<input class="form-control mb-3"
+placeholder="Expiry MM/YY"
+required>
+
+<input class="form-control mb-3"
+placeholder="CVV"
+required>
+
+<button class="btn btn-success">
+Pay Now
+</button>
+
+</form>
+
+{% endblock %}
+

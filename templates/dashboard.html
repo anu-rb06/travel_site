@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Admin Dashboard</h3>
+
+<hr>
+
+<!-- ADD DESTINATION -->
+<h4>Add Destination</h4>
+
+<form method="POST" action="/add_destination" enctype="multipart/form-data" class="row g-3 mb-4">
+
+<div class="col-md-3">
+<input class="form-control" name="name" placeholder="Destination Name" required>
+</div>
+
+<div class="col-md-4">
+<input class="form-control" name="description" placeholder="Description" required>
+</div>
+
+<div class="col-md-3">
+<input type="file" name="images" multiple>
+</div>
+
+<div class="col-md-2">
+<button class="btn btn-success">Add</button>
+</div>
+
+</form>
+
+<hr>
+
+<!-- ADD PACKAGE -->
+<h4>Add Package</h4>
+
+<form method="POST" action="/add_package" enctype="multipart/form-data" class="row g-3 mb-4">
+
+<div class="col-md-3">
+<input class="form-control" name="title" placeholder="Title" required>
+</div>
+
+<div class="col-md-2">
+<input class="form-control" name="price" placeholder="Price" required>
+</div>
+
+<div class="col-md-3">
+<select class="form-control" name="destination">
+{% for d in destinations %}
+<option value="{{ d[0] }}">{{ d[1] }}</option>
+{% endfor %}
+</select>
+</div>
+
+<div class="col-md-3">
+<input type="file" name="images" multiple>
+</div>
+
+<div class="col-md-1">
+<button class="btn btn-primary">Add</button>
+</div>
+
+</form>
+
+<hr>
+
+<!-- EXPORT BUTTON -->
+<a href="/export_bookings" class="btn btn-success mb-3">Export Bookings</a>
+
+<!-- BOOKINGS TABLE -->
+<h4>Bookings</h4>
+
+<table class="table table-bordered">
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Email</th>
+<th>Package</th>
+<th>Destination</th>
+<th>Payment ID</th>
+<th>Status</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+
+{% for b in bookings %}
+<tr>
+<td>{{ b[0] }}</td>
+<td>{{ b[1] }}</td>
+<td>{{ b[2] }}</td>
+<td>{{ b[3] }}</td>
+<td>{{ b[4] }}</td>
+<td>{{ b[5] }}</td>
+<td>{{ b[6] }}</td>
+<td>{{ b[7] }}</td>
+<td>
+<a href="/cancel_booking/{{ b[0] }}" class="btn btn-danger btn-sm">
+Cancel
+</a>
+</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<hr>
+
+<!-- PACKAGES TABLE -->
+<h4>Packages</h4>
+
+<table class="table table-bordered">
+
+<tr>
+<th>ID</th>
+<th>Title</th>
+<th>Price</th>
+<th>Action</th>
+</tr>
+
+{% for p in packages %}
+<tr>
+<td>{{ p[0] }}</td>
+<td>{{ p[1] }}</td>
+<td>{{ p[2] }}</td>
+<td>
+<a href="/edit_package/{{ p[0] }}" class="btn btn-warning btn-sm">Edit</a>
+<a href="/delete/{{ p[0] }}" class="btn btn-danger btn-sm">Delete</a>
+</td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}
+

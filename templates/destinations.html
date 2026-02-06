@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Popular Destinations</h2>
+
+<div class="row">
+
+{% for d in destinations %}
+<div class="col-md-4 mb-4">
+
+<div class="card shadow">
+
+{% if d[2] %}
+<img src="/static/uploads/{{ d[3] }}" class="card-img-top" height="220">
+{% endif %}
+
+<div class="card-body text-center">
+<h5>{{ d[1] }}</h5>
+
+<a href="/destination/{{ d[0] }}" class="btn btn-primary">
+View Details
+</a>
+
+</div>
+</div>
+
+</div>
+{% endfor %}
+
+</div>
+
+{% endblock %}
+

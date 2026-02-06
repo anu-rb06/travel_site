@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Edit Package</h3>
+
+<form method="POST">
+<input class="form-control mb-2" name="title" value="{{ package[1] }}">
+<input class="form-control mb-2" name="price" value="{{ package[2] }}">
+<button class="btn btn-primary">Update</button>
+</form>
+
+{% endblock %}
+
