@@ -9,33 +9,6 @@ pipeline {
     }
 
     stages {
-        stage('Install Dependencies') {
-    steps {
-        sh '''
-        python3 --version
-
-        # Create venv ONLY if activate script is missing
-        if [ ! -f "travel_env/bin/activate" ]; then
-            echo "🆕 Creating virtual environment: travel_env"
-            rm -rf travel_env
-            python3 -m venv travel_env
-        else
-            echo "♻️ Using existing virtual environment: travel_env"
-        fi
-
-        # Activate virtual environment
-        . travel_env/bin/activate
-
-        pip install --upgrade pip
-        pip install -r requirements.txt
-
-        python --version
-        pip list
-        '''
-    }
-}
-
-
         stage('Run Tests') {
             steps {
                 sh '''
