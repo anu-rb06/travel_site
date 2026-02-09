@@ -1,11 +1,11 @@
 pipeline {
     agent { label 'docker-agent' }
-	environment {
-        	IMAGE_NAME = "anu2706/travel_web_app"
-        	TAG = "latest"
-        	PREPROD_USER = "ubuntu"
-        	PREPROD_HOST = "13.219.143.91"
-    }
+
+    environment {
+        IMAGE_NAME = "anu2706/travel_web_app"
+        TAG = "latest"
+        PREPROD_USER = "ubuntu"
+        PREPROD_HOST = "13.219.143.91"
     }
 
     stages {
@@ -42,7 +42,7 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh '''
-                      echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                      echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                       docker push $IMAGE_NAME:$TAG
                     '''
                 }
@@ -52,20 +52,20 @@ pipeline {
         stage('Deploy to PreProd') {
             steps {
                 sshagent(['preprod-key']) {
-                    sh '''
-                      ssh ubuntu@PREPROD_IP "
+                    sh """
+                      ssh -o StrictHostKeyChecking=no $PREPROD_USER@$PREPROD_HOST "
                       docker pull $IMAGE_NAME:$TAG &&
                       docker stop travel || true &&
                       docker rm travel || true &&
                       docker run -d -p 5000:5000 --name travel $IMAGE_NAME:$TAG
                       "
-                    '''
+                    """
                 }
             }
         }
-    
+    }
 
-post {
+    post {
         success {
             echo "✅ Travel Flask App deployed successfully to Pre-Production"
         }
