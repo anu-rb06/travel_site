@@ -18,10 +18,29 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-              sh ''' 
-                  python3 --version
-                  pip3 install --upgrade pip
-                  pip3 install -r requirements.txt
+              sh '''
+                python3 --version
+
+                # Create virtual environment only if it does not exist
+                if [ ! -d "travel_env" ]; then
+                    echo "🆕 Creating virtual environment: travel_env"
+                    python3 -m venv travel_env
+                else
+                    echo "♻️ Using existing virtual environment: travel_env"
+                fi
+
+                # Activate virtual environment
+                . travel_env/bin/activate
+    
+                # Upgrade pip inside virtual environment
+                pip install --upgrade pip
+
+                # Install app dependencies
+                pip install -r requirements.txt
+
+                # Verify
+                python --version
+                pip list
                 '''
 
             }
@@ -29,7 +48,10 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'pytest'
+                sh '''
+                . travel_env/bin/activate
+                pytest
+                '''
             }
         }
 
