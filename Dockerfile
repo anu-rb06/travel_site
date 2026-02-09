@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
 # Set working directory
 WORKDIR /app
@@ -15,6 +15,6 @@ COPY . .
 # Expose Flask port
 EXPOSE 5000
 
-# Run app with Gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+# Run app
+CMD ["python", "app.py"]
 
