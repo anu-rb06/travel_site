@@ -11,11 +11,7 @@ pipeline {
     stages {
         stage('Run Tests') {
             steps {
-                sh '''
-                . travel_env/bin/activate
-                pip install pytest
-                pytest
-                '''
+                sh 'pytest'
             }
         }
 
