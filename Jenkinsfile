@@ -9,42 +9,32 @@ pipeline {
     }
 
     stages {
-
-        stage('Checkout Code') {
-            steps {
-                git 'https://github.com/anu-rb06/travel_site.git'
-            }
-        }
-
         stage('Install Dependencies') {
-            steps {
-              sh '''
-                python3 --version
+    steps {
+        sh '''
+        python3 --version
 
-                # Create virtual environment only if it does not exist
-                if [ ! -d "travel_env" ]; then
-                    echo "🆕 Creating virtual environment: travel_env"
-                    python3 -m venv travel_env
-                else
-                    echo "♻️ Using existing virtual environment: travel_env"
-                fi
+        # Create venv ONLY if activate script is missing
+        if [ ! -f "travel_env/bin/activate" ]; then
+            echo "🆕 Creating virtual environment: travel_env"
+            rm -rf travel_env
+            python3 -m venv travel_env
+        else
+            echo "♻️ Using existing virtual environment: travel_env"
+        fi
 
-                # Activate virtual environment
-                . travel_env/bin/activate
-    
-                # Upgrade pip inside virtual environment
-                pip install --upgrade pip
+        # Activate virtual environment
+        . travel_env/bin/activate
 
-                # Install app dependencies
-                pip install -r requirements.txt
+        pip install --upgrade pip
+        pip install -r requirements.txt
 
-                # Verify
-                python --version
-                pip list
-                '''
+        python --version
+        pip list
+        '''
+    }
+}
 
-            }
-        }
 
         stage('Run Tests') {
             steps {
