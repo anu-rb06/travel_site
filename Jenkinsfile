@@ -22,15 +22,15 @@ pipeline {
                 python3 --version
 
                 # Create virtual environment only if it does not exist
-                if [ ! -d "travel_env" ]; then
-                    echo "🆕 Creating virtual environment: travel_env"
-                    python3 -m venv travel_env
+                if [ ! -d "travel_app" ]; then
+                    echo "🆕 Creating virtual environment: travel_app"
+                    python3 -m venv travel_app
                 else
-                    echo "♻️ Using existing virtual environment: travel_env"
+                    echo "♻️ Using existing virtual environment: travel_app"
                 fi
 
                 # Activate virtual environment
-                . travel_env/bin/activate
+                . travel_app/bin/activate
     
                 # Upgrade pip inside virtual environment
                 pip install --upgrade pip
@@ -49,7 +49,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                . travel_env/bin/activate
+                . travel_app/bin/activate
                 pip install pytest
                 pytest
                 '''
