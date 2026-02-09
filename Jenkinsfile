@@ -9,17 +9,17 @@ pipeline {
     }
 
     stages {
-        stage('Run Tests') {
-            steps {
-                sh 'pytest'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t $IMAGE_NAME:$TAG .'
             }
         }
+    
+    stage('Run Tests (inside Docker)') {
+        steps {
+            sh 'docker run --rm $IMAGE_NAME:$TAG pytest'
+        }
+    }
 
         stage('Push Image to DockerHub') {
             steps {
