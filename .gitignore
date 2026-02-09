@@ -1,3 +1,7 @@
+# Python virtual environment
 travel_env/
+lib64/
+pyvenv.cfg
+
 __pycache__/
 *.pyc
