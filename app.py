@@ -1,12 +1,13 @@
 import os
 import smtplib
 import sqlite3
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session,flash
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import pandas as pd
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -98,7 +99,6 @@ def packages():
     return render_template("packages.html", packages=packages)
 
 # ---------------- BOOK PACKAGE ----------------
-
 @app.route("/book/<int:id>", methods=["GET","POST"])
 def book(id):
 
@@ -106,24 +106,89 @@ def book(id):
         return redirect("/login")
 
     db = get_db()
+
     package = db.execute(
         "SELECT * FROM packages WHERE id=?",
         (id,)
     ).fetchone()
-    db.close()
+
+    if not package:
+        db.close()
+        flash("Package not found")
+        return redirect("/packages")
+
+    # Get already booked dates for display
+    booked_dates = db.execute("""
+        SELECT start_date, end_date FROM bookings
+        WHERE package_id=? AND status='PAID'
+    """, (id,)).fetchall()
 
     if request.method == "POST":
+
+        start_date = request.form["start_date"]
+        end_date = request.form["end_date"]
+
+        # Convert to datetime
+        d1 = datetime.strptime(start_date, "%Y-%m-%d")
+        d2 = datetime.strptime(end_date, "%Y-%m-%d")
+
+        days = (d2 - d1).days
+
+        # Validate date logic
+        if days <= 0:
+            flash("End date must be after start date")
+            db.close()
+            return redirect(request.url)
+
+        # 🔵 CHECK AVAILABILITY
+        availability = db.execute("""
+            SELECT available_rooms FROM packages WHERE id=?
+        """, (id,)).fetchone()[0]
+
+        if availability <= 0:
+            flash("No availability for this package")
+            db.close()
+            return redirect(request.url)
+
+        # 🔵 BLOCK OVERLAPPING DATES
+        for row in booked_dates:
+            if not row[0] or not row[1]:
+                continue   # skip old bookings without dates
+
+            existing_start = datetime.strptime(row[0], "%Y-%m-%d")
+            existing_end = datetime.strptime(row[1], "%Y-%m-%d")
+            # Overlap condition
+            if not (d2 <= existing_start or d1 >= existing_end):
+                flash("Selected dates are already booked")
+                db.close()
+                return redirect(request.url)
+
+        # 🔵 CALCULATE PRICE
+        price_per_day = package[3]  # price column index
+        total_price = days * price_per_day
+
+        # Store in session for payment step
         session["pending_booking"] = {
             "package_id": id,
             "name": request.form["name"],
-            "email": request.form["email"]
+            "email": request.form["email"],
+            "start_date": start_date,
+            "end_date": end_date,
+            "days": days,
+            "total_price": total_price
         }
+
+        db.close()
         return redirect("/payment")
 
-    return render_template("booking.html", package=package)
+    db.close()
+    return render_template(
+        "booking.html",
+        package=package,
+        booked_dates=booked_dates
+    )
 
-# ---------------- SUCCESS ----------------
-
+#--------------------Success----------------
 @app.route("/success")
 def success():
     return render_template("success.html")
