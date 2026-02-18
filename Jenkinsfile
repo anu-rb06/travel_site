@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "anu2706/travel_web_app"
-        TAG = "latest"
+        TAG = "${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
         PREPROD_USER = "ubuntu"
         PREPROD_HOST = "13.219.143.91"
     }
