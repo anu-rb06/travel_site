@@ -10,6 +10,9 @@ import pandas as pd
 from datetime import datetime
 from prometheus_client import Counter, generate_latest
 from flask import Response
+    
+app = Flask(__name__)
+app.secret_key = "supersecretkey"
 
 REQUEST_COUNT = Counter('app_requests_total', 'Total requests')
 
@@ -21,9 +24,7 @@ def home():
 @app.route("/metrics")
 def metrics():
     return Response(generate_latest(), mimetype="text/plain")
-    
-app = Flask(__name__)
-app.secret_key = "supersecretkey"
+
 
 DATABASE = "travel.db"
 UPLOAD_FOLDER = "static/uploads"
