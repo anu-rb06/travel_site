@@ -8,7 +8,20 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import pandas as pd
 from datetime import datetime
+from prometheus_client import Counter, generate_latest
+from flask import Response
 
+REQUEST_COUNT = Counter('app_requests_total', 'Total requests')
+
+@app.route("/")
+def home():
+    REQUEST_COUNT.inc()
+    return "Hello"
+
+@app.route("/metrics")
+def metrics():
+    return Response(generate_latest(), mimetype="text/plain")
+    
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
